@@ -11,7 +11,7 @@
 #include "esp_ota_ops.h"
 #include "esp_system.h"
 #include "esp_log.h"
-#include "hal/usb_phy_ll.h"
+#include "hal/usb_fsls_phy_ll.h"
 #include "settings.h"
 #include "openai_api.h"
 
@@ -41,7 +41,7 @@ void EventWifiResetConfirmClick(lv_event_t *e)
     else
     {
         ESP_LOGI(TAG, "Reboot from WIFI Page to Factory Partition");
-        usb_phy_ll_int_jtag_enable(&USB_SERIAL_JTAG); // Configure USB PHY, Change back to USB-Serial-Jtag
+        usb_fsls_phy_ll_int_jtag_enable(&USB_SERIAL_JTAG); // Configure USB PHY, Change back to USB-Serial-Jtag
         esp_restart();
     }
 }

@@ -71,7 +71,7 @@ esp_err_t start_openai(uint8_t *audio, int audio_len)
         ui_ctrl_label_show_text(UI_CTRL_LABEL_REPLY_CONTENT, response);
         ui_ctrl_show_panel(UI_CTRL_PANEL_REPLY, 0);
 
-        esp_err_t status = text_to_speech_request(response, AUDIO_CODECS_MP3);
+        esp_err_t status = text_to_speech_request(response);
 
         if (status != ESP_OK)
         {

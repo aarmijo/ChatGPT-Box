@@ -20,12 +20,11 @@ menu "Example Configuration"
         default "gpt-3.5-turbo"
         help
             OpenAI model from https://platform.openai.com/docs/models/gpt-3-5
-
     config VOICE_ID
         string "Speaker Id"
-        default "kaolam_diantai"
+        default "erKgR0s8Y67t4iiHuA9R"
         help
-            speaker id from https://czyt.tech/post/a-free-tts-api/?from_wecom=1
+            speaker id from https://help.elevenlabs.io/hc/en-us/articles/14599760033937-How-do-I-find-my-voices-ID-of-my-voices-via-the-website-and-through-the-API
     config VOLUME_LEVEL
         int "volume level"
         default "90"
@@ -43,5 +42,9 @@ menu "Example Configuration"
         default 5
         help
             Set the Maximum retry to avoid station reconnecting to the AP unlimited when the AP is really inexistent.
-
+    config XI_API_KEY
+        string "ElevenLabs Key"
+        default "2d264a30c0f0a5062bce64676df73603"
+        help
+           ElevenLabs api key for the example to use.
 endmenu

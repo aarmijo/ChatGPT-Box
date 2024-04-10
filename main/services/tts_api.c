@@ -18,6 +18,7 @@
 
 #define VOICE_ID CONFIG_VOICE_ID
 #define VOLUME CONFIG_VOLUME_LEVEL
+#define XI_API_KEY CONFIG_XI_API_KEY
 
 static const char *TAG = "TTS-Api";
 
@@ -62,88 +63,13 @@ static esp_err_t http_event_handler(esp_http_client_event_t *evt)
     return ESP_OK;
 }
 
-/* Decode 2 Hex */
-
-char dec2hex(short int c)
-{
-    if (0 <= c && c <= 9)
-    {
-        return c + '0';
-    }
-    else if (10 <= c && c <= 15)
-    {
-        return c + 'A' - 10;
-    }
-    else
-    {
-        return -1;
-    }
-}
-
-/* Encode URL for playing sound */
-
-void url_encode(const char *url, char *encode_out)
-{
-    int i = 0;
-    int len = strlen(url);
-    int res_len = 0;
-
-    assert(encode_out);
-
-    for (i = 0; i < len; ++i)
-    {
-        char c = url[i];
-        char n = url[i + 1];
-        if (c == '\\' && n == 'n')
-        {
-            i += 1;
-            continue;
-        }
-        else if (('0' <= c && c <= '9') || ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') || c == '/' || c == '.')
-        {
-            encode_out[res_len++] = c;
-        }
-        else
-        {
-            int j = (short int)c;
-            if (j < 0)
-            {
-                j += 256;
-            }
-            int i1, i0;
-            i1 = j / 16;
-            i0 = j - i1 * 16;
-            encode_out[res_len++] = '%';
-            encode_out[res_len++] = dec2hex(i1);
-            encode_out[res_len++] = dec2hex(i0);
-        }
-    }
-    encode_out[res_len] = '\0';
-}
-
 /* Create Text to Speech request */
 
-esp_err_t text_to_speech_request(const char *message, AUDIO_CODECS_FORMAT code_format)
+esp_err_t text_to_speech_request(const char *message)
 {
     size_t message_len = strlen(message);
-    char *encoded_message;
-    char *codec_format_str;
-    encoded_message = heap_caps_malloc((3 * message_len + 1), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
-    url_encode(message, encoded_message);
 
-    if (AUDIO_CODECS_MP3 == code_format)
-    {
-        codec_format_str = "MP3";
-    }
-    else
-    {
-        codec_format_str = "WAV";
-    }
-    int url_size = snprintf(NULL, 0, "https://dds.dui.ai/runtime/v1/synthesize?voiceId=%s&text=%s&speed=1&volume=%d&audiotype=%s",
-                            VOICE_ID,
-                            encoded_message,
-                            VOLUME,
-                            codec_format_str);
+    int url_size = snprintf(NULL, 0, "https://api.elevenlabs.io/v1/text-to-speech/%s/stream", VOICE_ID);
     // Allocate memory for the URL buffer
     char *url = heap_caps_malloc((url_size + 1), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
     if (url == NULL)
@@ -151,14 +77,10 @@ esp_err_t text_to_speech_request(const char *message, AUDIO_CODECS_FORMAT code_f
         ESP_LOGE(TAG, "Failed to allocate memory for URL");
         return ESP_ERR_NO_MEM;
     }
-    snprintf(url, url_size + 1, "https://dds.dui.ai/runtime/v1/synthesize?voiceId=%s&text=%s&speed=1&volume=%d&audiotype=%s",
-             VOICE_ID,
-             encoded_message,
-             VOLUME,
-             codec_format_str);
+    snprintf(url, url_size + 1, "https://api.elevenlabs.io/v1/text-to-speech/%s/stream", VOICE_ID);
     esp_http_client_config_t config = {
         .url = url,
-        .method = HTTP_METHOD_GET,
+        .method = HTTP_METHOD_POST,
         .event_handler = http_event_handler,
         .buffer_size = 128000,
         .buffer_size_tx = 4000,
@@ -169,6 +91,15 @@ esp_err_t text_to_speech_request(const char *message, AUDIO_CODECS_FORMAT code_f
     uint32_t starttime = esp_log_timestamp();
     ESP_LOGE(TAG, "[Start] create_TTS_request, timestamp:%" PRIu32, starttime);
     esp_http_client_handle_t client = esp_http_client_init(&config);
+    esp_http_client_set_header(client, "Accept", "application/json");
+    esp_http_client_set_header(client, "xi-api-key", XI_API_KEY);
+    char *json_data =
+        "{\"text\": \"%s\", \"model_id\": \"eleven_multilingual_v2\", "
+        "\"voice_settings\": {\"stability\": 0.5, \"similarity_boost\": 0.8, "
+        "\"style\": 0.0, \"use_speaker_boost\": true}}";
+    char json_payload[256];
+    snprintf(json_payload, sizeof(json_payload), json_data, message);
+    esp_http_client_set_post_field(client, json_payload, strlen(json_payload));
     esp_err_t err = esp_http_client_perform(client);
     if (err != ESP_OK)
     {
@@ -177,7 +108,6 @@ esp_err_t text_to_speech_request(const char *message, AUDIO_CODECS_FORMAT code_f
     ESP_LOGE(TAG, "[End] create_TTS_request, + offset:%" PRIu32, esp_log_timestamp() - starttime);
 
     heap_caps_free(url);
-    heap_caps_free(encoded_message);
     esp_http_client_cleanup(client);
     return err;
 }

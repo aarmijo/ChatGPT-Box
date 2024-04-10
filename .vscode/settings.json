@@ -1,6 +1,6 @@
 {
     "C_Cpp.intelliSenseEngine": "default",
-    "idf.portWin": "COM7",
+    "idf.portWin": "COM12",
     "idf.adapterTargetName": "esp32s3",
     "idf.openOcdConfigs": [
         "board/esp32s3-builtin.cfg"
@@ -19,6 +19,8 @@
         "esp_log.h": "c",
         "esp_err.h": "c",
         "stdbool.h": "c",
-        "string.h": "c"
+        "string.h": "c",
+        "openai_api.h": "c",
+        "usb_fsls_phy_ll.h": "c"
     },
 }

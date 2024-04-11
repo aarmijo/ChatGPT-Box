@@ -19,6 +19,8 @@ static OpenAI_ImageGeneration_t *imageGeneration = NULL;
 OpenAI_StringResponse_t *chat_result;
 OpenAI_ImageResponse_t *image_response;
 
+const char *text_system = "Tu nombre es Chat Box. Eres un bot de chat en un dispositivo ESP32 S3 Box impulsado por OpenAI. Responde a las preguntas pero se breve.";
+
 void openai_init(char *api_key)
 {
     if (openai == NULL)
@@ -29,11 +31,11 @@ void openai_init(char *api_key)
         imageGeneration = openai->imageGenerationCreate(openai);
 
         audioTranscription->setResponseFormat(audioTranscription, OPENAI_AUDIO_RESPONSE_FORMAT_JSON);
-        audioTranscription->setLanguage(audioTranscription, "en");
+        audioTranscription->setLanguage(audioTranscription, "es");
         audioTranscription->setTemperature(audioTranscription, 0.2);
 
         chatCompletion->setModel(chatCompletion, CONFIG_OPENAI_MODEL);
-        chatCompletion->setSystem(chatCompletion, "user");
+        chatCompletion->setSystem(chatCompletion, text_system);
         chatCompletion->setMaxTokens(chatCompletion, CONFIG_MAX_TOKEN);
         chatCompletion->setTemperature(chatCompletion, 0.2);
         chatCompletion->setStop(chatCompletion, "\r");

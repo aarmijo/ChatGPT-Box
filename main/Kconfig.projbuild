@@ -44,7 +44,7 @@ menu "Example Configuration"
             Set the Maximum retry to avoid station reconnecting to the AP unlimited when the AP is really inexistent.
     config XI_API_KEY
         string "ElevenLabs Key"
-        default "2d264a30c0f0a5062bce64676df73603"
+        default ""
         help
            ElevenLabs api key for the example to use.
 endmenu

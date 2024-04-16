@@ -48,6 +48,10 @@ static esp_err_t http_event_handler(esp_http_client_event_t *evt)
             memcpy(audio_rx_buffer + file_total_len, (char *)evt->data, evt->data_len);
             file_total_len += evt->data_len;
         }
+        if (!esp_http_client_is_chunked_response(evt->client)) 
+        {
+            printf("%.*s", evt->data_len, (char*)evt->data);
+        }
         break;
     case HTTP_EVENT_ON_FINISH:
         ESP_LOGI(TAG, "HTTP_EVENT_ON_FINISH:%" PRIu32 ", %" PRIu32 " K", file_total_len, file_total_len / 1024);
@@ -67,8 +71,6 @@ static esp_err_t http_event_handler(esp_http_client_event_t *evt)
 
 esp_err_t text_to_speech_request(const char *message)
 {
-    size_t message_len = strlen(message);
-
     int url_size = snprintf(NULL, 0, "https://api.elevenlabs.io/v1/text-to-speech/%s/stream", VOICE_ID);
     // Allocate memory for the URL buffer
     char *url = heap_caps_malloc((url_size + 1), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
@@ -87,10 +89,11 @@ esp_err_t text_to_speech_request(const char *message)
         .timeout_ms = 40000,
         .crt_bundle_attach = esp_crt_bundle_attach,
     };
-
+    
     uint32_t starttime = esp_log_timestamp();
     ESP_LOGE(TAG, "[Start] create_TTS_request, timestamp:%" PRIu32, starttime);
     esp_http_client_handle_t client = esp_http_client_init(&config);
+    esp_http_client_set_header(client, "Content-Type", "application/json");
     esp_http_client_set_header(client, "Accept", "application/json");
     esp_http_client_set_header(client, "xi-api-key", XI_API_KEY);
     char *json_data =
@@ -98,7 +101,7 @@ esp_err_t text_to_speech_request(const char *message)
         "\"voice_settings\": {\"stability\": 0.5, \"similarity_boost\": 0.8, "
         "\"style\": 0.0, \"use_speaker_boost\": true}}";
     char json_payload[256];
-    snprintf(json_payload, sizeof(json_payload), json_data, message);
+    snprintf(json_payload, sizeof(json_payload), json_data, message);    
     esp_http_client_set_post_field(client, json_payload, strlen(json_payload));
     esp_err_t err = esp_http_client_perform(client);
     if (err != ESP_OK)

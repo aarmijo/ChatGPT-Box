@@ -22,7 +22,7 @@ menu "Example Configuration"
             OpenAI model from https://platform.openai.com/docs/models/gpt-3-5
     config VOICE_ID
         string "Speaker Id"
-        default "erKgR0s8Y67t4iiHuA9R"
+        default ""
         help
             speaker id from https://help.elevenlabs.io/hc/en-us/articles/14599760033937-How-do-I-find-my-voices-ID-of-my-voices-via-the-website-and-through-the-API
     config VOLUME_LEVEL

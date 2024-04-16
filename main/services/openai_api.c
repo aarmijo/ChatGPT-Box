@@ -19,7 +19,7 @@ static OpenAI_ImageGeneration_t *imageGeneration = NULL;
 OpenAI_StringResponse_t *chat_result;
 OpenAI_ImageResponse_t *image_response;
 
-const char *text_system = "Tu nombre es Chat Box. Eres un bot de chat en un dispositivo ESP32 S3 Box impulsado por OpenAI. Responde a las preguntas pero se breve.";
+const char *text_system = "Tu nombre es Chat Box. Eres un bot de chat en un dispositivo ESP32 S3 Box impulsado por OpenAI.";
 
 void openai_init(char *api_key)
 {

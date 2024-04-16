@@ -75,6 +75,7 @@ static esp_err_t audio_mute_function(AUDIO_PLAYER_MUTE_SETTING setting)
         if (audio_play_finish_cb)
         {
             audio_play_finish_cb();
+            bsp_codec_set_fs(16000, 16, 2);  
         }
     }
     return ESP_OK;

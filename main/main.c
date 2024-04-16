@@ -54,7 +54,7 @@ esp_err_t start_openai(uint8_t *audio, int audio_len)
     if (openai_service_type == SERVICE_TYPE_CHAT)
     {
         char text_with_prompt[512];
-        sprintf(text_with_prompt, "Empieza la respuesta siempre con la palabra respuesta: %s", text);
+        sprintf(text_with_prompt, "Empieza la respuesta siempre con un saludo: %s", text);
 
         char *response = openai_chat(text_with_prompt);
 

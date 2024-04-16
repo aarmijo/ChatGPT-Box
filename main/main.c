@@ -36,13 +36,13 @@ esp_err_t start_openai(uint8_t *audio, int audio_len)
 
     if (text == NULL)
     {
-        ui_ctrl_label_show_text(UI_CTRL_LABEL_LISTEN_SPEAK, "API Key is not valid");
+        ui_ctrl_label_show_text(UI_CTRL_LABEL_LISTEN_SPEAK, "API Key no válida");
         return ESP_FAIL;
     }
 
     if (strcmp(text, "invalid_request_error") == 0 || strcmp(text, "server_error") == 0 || strcmp(text, "") == 0)
     {
-        ui_ctrl_label_show_text(UI_CTRL_LABEL_LISTEN_SPEAK, "Sorry, I can't understand.");
+        ui_ctrl_label_show_text(UI_CTRL_LABEL_LISTEN_SPEAK, "Lo siento, no entiendo.");
         ui_ctrl_show_panel(UI_CTRL_PANEL_SLEEP, 2000);
         return ESP_FAIL;
     }
@@ -62,7 +62,7 @@ esp_err_t start_openai(uint8_t *audio, int audio_len)
         if (response == NULL || (strcmp(response, "invalid_request_error") == 0 || strcmp(response, "server_error") == 0))
         {
             // UI listen fail
-            ui_ctrl_label_show_text(UI_CTRL_LABEL_LISTEN_SPEAK, "Sorry, I can't understand.");
+            ui_ctrl_label_show_text(UI_CTRL_LABEL_LISTEN_SPEAK, "Lo siento, no entiendo.");
             ui_ctrl_show_panel(UI_CTRL_PANEL_SLEEP, 2000);
             return ESP_FAIL;
         }
@@ -97,7 +97,7 @@ esp_err_t start_openai(uint8_t *audio, int audio_len)
         if (status != ESP_OK)
         {
             ESP_LOGE(TAG, "Error creating image request: %s\n", esp_err_to_name(status));
-            ui_ctrl_label_show_text(UI_CTRL_LABEL_LISTEN_SPEAK, "Image failed to download.");
+            ui_ctrl_label_show_text(UI_CTRL_LABEL_LISTEN_SPEAK, "La imágen no se ha podido descargar.");
             ui_ctrl_show_panel(UI_CTRL_PANEL_SLEEP, 2000);
             return ESP_FAIL;
         }

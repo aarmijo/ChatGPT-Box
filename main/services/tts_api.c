@@ -100,8 +100,15 @@ esp_err_t text_to_speech_request(const char *message)
         "{\"text\": \"%s\", \"model_id\": \"eleven_multilingual_v2\", "
         "\"voice_settings\": {\"stability\": 0.5, \"similarity_boost\": 0.8, "
         "\"style\": 0.0, \"use_speaker_boost\": true}}";
-    char json_payload[256];
-    snprintf(json_payload, sizeof(json_payload), json_data, message);    
+    int json_data_size = snprintf(NULL, 0, json_data, message);
+    // Allocate memory for the json_payload buffer
+    char *json_payload = heap_caps_malloc((json_data_size + 1), MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT);
+    if (json_payload == NULL)
+    {
+        ESP_LOGE(TAG, "Failed to allocate memory for json_payload");
+        return ESP_ERR_NO_MEM;
+    }
+    snprintf(json_payload, json_data_size + 1, json_data, message);  
     esp_http_client_set_post_field(client, json_payload, strlen(json_payload));
     esp_err_t err = esp_http_client_perform(client);
     if (err != ESP_OK)

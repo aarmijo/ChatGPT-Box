@@ -58,7 +58,7 @@ char *openai_transcribe_audio(uint8_t *audio, int audio_len)
 
 char *openai_chat(char *prompt)
 {
-    chat_result = chatCompletion->message(chatCompletion, prompt, false); // Calling Chat completion api
+    chat_result = chatCompletion->message(chatCompletion, prompt, true); // Calling Chat completion api
     return chat_result->getData(chat_result, 0);
 }
 

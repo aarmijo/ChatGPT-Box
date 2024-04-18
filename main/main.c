@@ -86,7 +86,7 @@ esp_err_t start_openai(uint8_t *audio, int audio_len)
         }
 
         // Clearing resources
-        openai_chat_cleanup();
+        //openai_chat_cleanup();
     }
     else if (openai_service_type == SERVICE_TYPE_IMAGE)
     {
